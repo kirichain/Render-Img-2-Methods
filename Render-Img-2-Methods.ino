@@ -12,11 +12,11 @@ TFT_eSPI tft = TFT_eSPI();
 //const char *ssid = "ERPLTD";
 //const char *password = "erp@@2020";
 
-const char *ssid = "Guest";
-const char *password = "24091995";
+//const char *ssid = "Guest";
+//const char *password = "24091995";
 
-//const char *ssid = "SFS OFFICE";
-//const char *password = "sfs#office!@";
+const char *ssid = "SFS OFFICE";
+const char *password = "sfs#office!@";
 
 //const char *imageUrl = "http://203.113.151.196:8080/img/avatars/imgpsh.png";
 //const char *imageUrl = "http://10.102.40.102:890/ProcessImage/GetBMP";
@@ -24,6 +24,7 @@ const char *password = "24091995";
 //const char *imageUrl = "http://10.102.40.102:890/ProcessImage/GetBMP?path=apple100.png&depth=16";
 //const char *imageUrl = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/arr";
 const char *imageUrl = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/apple";
+char filename[10] = "apple100";
 
 // Declare the array to store the image, image size is 100x100
 uint16_t imageArray[20000] = {0};
@@ -46,7 +47,7 @@ void setup() {
 }
 
 void loop() {
-    if (downloadAndDisplayImage(imageUrl, "apple100.bmp", 0)) {
+    if (downloadAndDisplayImage(imageUrl, filename, 0)) {
         Serial.println("Image downloaded and displayed successfully");
         //WiFi.disconnect(true);
     } else {
