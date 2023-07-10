@@ -12,22 +12,22 @@ TFT_eSPI tft = TFT_eSPI();
 //const char *ssid = "ERPLTD";
 //const char *password = "erp@@2020";
 
-//const char *ssid = "Guest";
-//const char *password = "24091995";
+const char *ssid = "Guest";
+const char *password = "24091995";
 
-const char *ssid = "SFS OFFICE";
-const char *password = "sfs#office!@";
+//const char *ssid = "SFS OFFICE";
+//const char *password = "sfs#office!@";
 
 //const char *imageUrl = "http://203.113.151.196:8080/img/avatars/imgpsh.png";
 //const char *imageUrl = "http://10.102.40.102:890/ProcessImage/GetBMP";
 //const char *imageUrl = "http://10.102.40.102:890/ProcessImage/GetBMP?path=apple100.png&depth=32";
 //const char *imageUrl = "http://10.102.40.102:890/ProcessImage/GetBMP?path=apple100.png&depth=16";
-//const char *imageUrl = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/arr";
-const char *imageUrl = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/apple";
-char filename[10] = "apple100";
+//const char *imageUrl = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+char serverUrl[] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+char filename[10] = "arr";
 
 // Declare the array to store the image, image size is 100x100
-uint16_t imageArray[20000] = {0};
+uint16_t imageArray[14400] = {0};
 
 void setup() {
     Serial.begin(115200);
@@ -47,7 +47,7 @@ void setup() {
 }
 
 void loop() {
-    if (downloadAndDisplayImage(imageUrl, filename, 0)) {
+    if (downloadAndDisplayImage(serverUrl, filename, 0)) {
         Serial.println("Image downloaded and displayed successfully");
         //WiFi.disconnect(true);
     } else {
@@ -57,12 +57,17 @@ void loop() {
     delay(120000);
 }
 
-bool downloadAndDisplayImage(const char *url, char *filename, byte method) {
+bool downloadAndDisplayImage(char *url, char *filename, byte method) {
     WiFiClient client;
     HTTPClient http;
 
     // Clear image array
     memset(imageArray, 0, sizeof(imageArray));
+    // Concatenate serverUrl and filename to get full URL
+    strcat(url, filename);
+    // Print full URL to Serial
+    Serial.print("Full URL: ");
+    Serial.println(url);
     switch (method) {
         case 0:
             // Using reading JSON string
@@ -177,9 +182,7 @@ bool downloadAndDisplayImage(const char *url, char *filename, byte method) {
                         // Swap the colour byte order when rendering
                         tft.setSwapBytes(true);
                         // Display the image
-                        //tft.pushImage(0, 0, 100, 100, img);
-                        // Display the image
-                        tft.pushImage(0, 0, 100, 100, imageArray);
+                        tft.pushImage(0, 0, 120, 120, imageArray);
                     }
                 } else {
                     Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
@@ -303,9 +306,7 @@ bool downloadAndDisplayImage(const char *url, char *filename, byte method) {
                         // Swap the colour byte order when rendering
                         tft.setSwapBytes(true);
                         // Display the image
-                        //tft.pushImage(0, 0, 100, 100, img);
-                        // Display the image
-                        tft.pushImage(0, 0, 100, 100, imageArray);
+                        tft.pushImage(0, 0, 120, 120, imageArray);
                     }
                 } else {
                     Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
