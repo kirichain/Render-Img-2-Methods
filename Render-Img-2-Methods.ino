@@ -19,15 +19,19 @@ const char *password = "24091995";
 //const char *password = "sfs#office!@";
 
 //const char *imageUrl = "http://203.113.151.196:8080/img/avatars/imgpsh.png";
-//const char *imageUrl = "http://10.102.40.102:890/ProcessImage/GetBMP";
-//const char *imageUrl = "http://10.102.40.102:890/ProcessImage/GetBMP?path=apple100.png&depth=32";
-//const char *imageUrl = "http://10.102.40.102:890/ProcessImage/GetBMP?path=apple100.png&depth=16";
-//const char *imageUrl = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
-char serverUrl[] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
-char filename[10] = "arr";
+// Array to store the image, image size is 100x100
+uint16_t imageArray[10000] = {0};
+// Array to store the image, image size is 120x120
+//uint16_t imageArray[14400] = {0};
+//char serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+//char _serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+//char filename[10] = "arr";
+char serverUrl[100] = "http://10.102.40.171:80/ProcessImage/GetDataImage";
+char _serverUrl[100] = "http://10.102.40.171:80/ProcessImage/GetDataImage";
+char filename[10] = "";
 
-// Declare the array to store the image, image size is 100x100
-uint16_t imageArray[14400] = {0};
+// Storage for previous time
+unsigned long previousMillis = 0;
 
 void setup() {
     Serial.begin(115200);
@@ -47,14 +51,18 @@ void setup() {
 }
 
 void loop() {
-    if (downloadAndDisplayImage(serverUrl, filename, 0)) {
-        Serial.println("Image downloaded and displayed successfully");
-        //WiFi.disconnect(true);
-    } else {
-        Serial.println("Failed to download or display the image");
+    // Get current time
+    unsigned long currentMillis = millis();
+    // If current time is greater than previous time plus 1 min
+    if (currentMillis - previousMillis >= 60000) {
+        // Update previous time to current time
+        previousMillis = currentMillis;
+        if (downloadAndDisplayImage(serverUrl, filename, 1)) {
+            Serial.println("Image downloaded and displayed successfully");
+        } else {
+            Serial.println("Failed to download or display the image");
+        }
     }
-    // Delay for 2 mins
-    delay(120000);
 }
 
 bool downloadAndDisplayImage(char *url, char *filename, byte method) {
@@ -252,19 +260,17 @@ bool downloadAndDisplayImage(char *url, char *filename, byte method) {
                                 int i = 0;
                                 while (i < c) {
                                     // Print buff[i] to Serial as HEX
-                                    Serial.printf("%02X ", buff[i]);
-                                    Serial.printf("%02X ", buff[i + 1]);
-                                    // Print buff[i] to Serial as DEC
-                                    //Serial.printf("%d ", buff[i]);
+                                    //Serial.printf("%02X ", buff[i]);
+                                    //Serial.printf("%02X ", buff[i + 1]);
                                     // Add buff[i] and buff[i+1] to buff2
                                     buff2[0] = buff[i];
                                     buff2[1] = buff[i + 1];
                                     // Concatenate buff2[0] and buff2[1] to 16-bit variable buff16
                                     buff16 = (buff2[0] << 8) | buff2[1];
                                     // Print buff16 to Serial as HEX
-                                    Serial.printf("%04X ", buff16);
+                                    //Serial.printf("%04X ", buff16);
                                     // Print buff16 to Serial as DEC
-                                    //Serial.printf("%d ", buff16);
+                                    Serial.printf("%d ", buff16);
                                     // Reset buff2
                                     memset(buff2, 0, sizeof(buff2));
                                     // Write buff16 to imageArray
@@ -306,7 +312,7 @@ bool downloadAndDisplayImage(char *url, char *filename, byte method) {
                         // Swap the colour byte order when rendering
                         tft.setSwapBytes(true);
                         // Display the image
-                        tft.pushImage(0, 0, 120, 120, imageArray);
+                        tft.pushImage(0, 0, 100, 100, imageArray);
                     }
                 } else {
                     Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
